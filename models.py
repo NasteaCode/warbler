@@ -34,7 +34,8 @@ class User(db.Model):
 
     id = db.Column(
         db.Integer,
-        primary_key=True,
+        primary_key=True, 
+        autoincrement=True
     )
 
     email = db.Column(
@@ -98,7 +99,7 @@ class User(db.Model):
         return len(found_user_list) == 1
 
     def is_following(self, other_user):
-        """Is this user following `other_use`?"""
+        """Is this user following `other_user`?"""
 
         found_user_list = [user for user in self.following if user == other_user]
         return len(found_user_list) == 1
@@ -118,7 +119,7 @@ class User(db.Model):
             password=hashed_pwd,
             image_url=image_url,
         )
-
+        ###### check to see if we are committing on the app.py ######
         db.session.add(user)
         return user
 
@@ -130,7 +131,7 @@ class User(db.Model):
         It searches for a user whose password hash matches this password
         and, if it finds such a user, returns that user object.
 
-        If can't find matching user (or if password is wrong), returns False.
+        If it can't find matching user (or if password is wrong), returns False.
         """
 
         user = cls.query.filter_by(username=username).first()
