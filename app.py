@@ -32,7 +32,7 @@ connect_db(app)
 @app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
-
+    # g only lasts for a request(goes away after a request). Flask thing
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
 
@@ -103,9 +103,9 @@ def login():
             do_login(user)
             flash(f"Hello, {user.username}!", "success")
             return redirect("/")
-
+   
         flash("Invalid credentials.", 'danger')
-
+    
     return render_template('users/login.html', form=form)
 
 
@@ -114,6 +114,10 @@ def logout():
     """Handle logout of user."""
 
     # IMPLEMENT THIS
+
+    session.pop(CURR_USER_KEY)
+
+    return redirect("/login")
 
 
 ##############################################################################
@@ -140,6 +144,10 @@ def list_users():
 def users_show(user_id):
     """Show user profile."""
 
+    # Tim's example
+    # if not g.user or g.user.id != user_id:
+    #     return 401
+    
     user = User.query.get_or_404(user_id)
 
     return render_template('users/show.html', user=user)
