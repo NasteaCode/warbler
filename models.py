@@ -65,11 +65,11 @@ class User(db.Model):
     )
 
     location = db.Column(
-        db.Text,
+        db.String(50),
     )
 
     password = db.Column(
-        db.Text,
+        db.String(20),
         nullable=False,
     )
 

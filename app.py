@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from forms import UserAddForm, LoginForm, MessageForm
+from forms import UserAddForm, LoginForm, MessageForm, EditUserForm
 from models import db, connect_db, User, Message
 
 CURR_USER_KEY = "curr_user"
@@ -208,11 +208,31 @@ def stop_following(follow_id):
 
 
 @app.route('/users/profile', methods=["GET", "POST"])
-def profile():
+def update_profile():
     """Update profile for current user."""
+    
+    form = EditUserForm(obj=g.user)
 
+    # user = User.query.get(session[CURR_USER_KEY])
     # IMPLEMENT THIS
+    if form.validate_on_submit():
+        if User.authenticate(g.user.username, form.password.data):
+            # we don't need line 230 because we've done it g.user
+            # user = User.query.get(session[CURR_USER_KEY])
+            user = g.user
+            user.username = form.username.data
+            user.email = form.email.data
+            user.image_url = form.image_url.data
+            user.header_image_url = form.header_image_url.data
+            user.bio = form.bio.data
+              
+            db.session.add(user)
+            db.session.commit()
 
+            return redirect(f"/users/{user.id}")
+        
+    else:
+        return render_template("users/edit.html", form=form)
 
 @app.route('/users/delete', methods=["POST"])
 def delete_user():
